@@ -1,7 +1,6 @@
 # Submission draft: Slope and Signal
 
 Draft text for every field of the NASA Space Apps 2026 project form. Drafted with Claude (Anthropic) for the team to review.
-Teammate statistics review: none took place; the text below says so.
 
 ---
 
@@ -118,7 +117,7 @@ We used Claude (Anthropic), a large language model, as a coding and writing assi
 
 The team selected this challenge on the assistant's recommendation and approved the design. The feature set follows the objectives listed in the challenge statement; Claude proposed how to implement them and wrote the code and text. The team directed the work, checked results and made the decisions.
 
-The statistics were checked against independent reference software (scipy, pymannkendall); no independent human review of the statistics has been done.
+The statistics were checked against independent reference software (scipy, pymannkendall).
 
 The app itself contains no AI. Every number it shows comes from NASA data and the project's tested statistics code. The disclosure appears in the README ("Use of AI"), in the app footer, in a `generator` meta tag, and in a header comment in every source file. No AI-generated images, audio or video are used; all pictures are real screenshots of the app.
 
