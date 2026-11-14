@@ -82,6 +82,7 @@ async function loadLand(): Promise<number[][][]> {
 }
 
 const NS = 'http://www.w3.org/2000/svg';
+const fmtDeg = (v: number, pos: string, neg: string) => `${Math.abs(v)}°${v > 0 ? pos : v < 0 ? neg : ''}`;
 
 export interface TrendMapApi {
   run(q: MapQuery, opts?: { snapshotOnly?: boolean; scroll?: boolean }): Promise<MapResult | null>;
@@ -199,6 +200,8 @@ export function initTrendMap(host: HTMLElement, onCellPick: (lat: number, lon: n
     const lats = [...new Set(cells.map((c) => c.lat))].sort((a, b) => a - b);
     const dlon = lons.length > 1 ? lons[1] - lons[0] : 0.625;
     const dlat = lats.length > 1 ? lats[1] - lats[0] : 0.5;
+    const hw = (W * dlon) / (box.lonMax - box.lonMin) / 2; // half a cell, cells overhang the box edge
+    const hh = (H * dlat) / (box.latMax - box.latMin) / 2;
     const pct = (k: number) => `${Math.round((100 * k) / cells.length)}%`;
     const word = (up: boolean) => (up ? 'increase' : 'decrease');
     const summary =
@@ -212,11 +215,11 @@ export function initTrendMap(host: HTMLElement, onCellPick: (lat: number, lon: n
         <div class="tm-legend" aria-hidden="true">
           ${[-4, -3, -2, -1, 0, 1, 2, 3, 4].map((k) => `<span class="sw" style="background:${colourVar(k)}"></span>`).join('')}
           <span class="tm-ends"><span>${fmtNum(-vmax, dp, true)}</span><span>0</span><span>${fmtNum(vmax, dp, true)} ${escapeHtml(v.units)} per decade</span></span>
-          <span class="tm-sigkey"><span class="sigdot"></span> significant (p &lt; 0.05)</span>
+          <span class="tm-sigkey"><span class="sigdot"></span> Dot = significant trend (p &lt; 0.05); colour = size of the slope.</span>
         </div>
-        <div class="tm-wrap"><svg viewBox="0 0 ${W} ${H}" class="tm-svg" role="img" aria-labelledby="tm-h tm-summary"></svg><div class="tooltip" hidden></div></div>
-        <p class="small">Box ${box.latMin}° to ${box.latMax}° latitude, ${box.lonMin}° to ${box.lonMax}° longitude${query.name ? `, around ${escapeHtml(placeText(query))}` : ''}. Each square is one NASA POWER grid cell (${dlat}° × ${dlon}°). Tap a cell to investigate it in detail. With hundreds of cells, about 5% can look significant by chance alone, and neighbouring cells are not independent: look for large coherent patches, not single cells.</p>
-        <details class="table-alt"><summary>Show all cells as a table</summary><table><caption>Trend per grid cell</caption><thead><tr><th scope="col">Latitude</th><th scope="col">Longitude</th><th scope="col">Theil-Sen per decade</th><th scope="col">p (Hamed-Rao)</th></tr></thead><tbody>
+        <div class="tm-wrap"><svg viewBox="${-46 - hw} ${-10 - hh} ${W + 58 + 2 * hw} ${H + 38 + 2 * hh}" class="tm-svg" role="img" aria-labelledby="tm-h tm-summary"></svg><div class="tooltip" hidden></div></div>
+        <p class="small">Grid points from ${fmtDeg(box.latMin, 'N', 'S')} to ${fmtDeg(box.latMax, 'N', 'S')} and ${fmtDeg(box.lonMin, 'E', 'W')} to ${fmtDeg(box.lonMax, 'E', 'W')}${query.name ? `, around ${escapeHtml(placeText(query))}` : ''}. Each square is one NASA POWER grid cell (${dlat}° × ${dlon}°). Tap a cell to investigate it in detail. With hundreds of cells, about 5% can look significant by chance alone, and neighbouring cells are not independent: look for large coherent patches, not single cells.</p>
+        <details class="table-alt"><summary>Show all cells as a table</summary><table tabindex="0"><caption>Trend per grid cell</caption><thead><tr><th scope="col">Latitude</th><th scope="col">Longitude</th><th scope="col">Theil-Sen per decade</th><th scope="col">p (Hamed-Rao)</th></tr></thead><tbody>
         ${cells.map((c) => `<tr><td>${c.lat}</td><td>${c.lon}</td><td>${fmtNum(c.slope, dp, true)}</td><td>${fmtP(c.p)}</td></tr>`).join('')}</tbody></table></details>
       </figure>`;
     const svg = out.querySelector('svg')!;
@@ -238,7 +241,7 @@ export function initTrendMap(host: HTMLElement, onCellPick: (lat: number, lon: n
     const land = land50 ?? [];
     const inBox = land.filter((ring) => ring.some(([x, y]) => x >= box.lonMin - 1 && x <= box.lonMax + 1 && y >= box.latMin - 1 && y <= box.latMax + 1));
     const clipId = `tmclip${Math.random().toString(36).slice(2, 8)}`;
-    svg.insertAdjacentHTML('beforeend', `<clipPath id="${clipId}"><rect width="${W}" height="${H}"></rect></clipPath>`);
+    svg.insertAdjacentHTML('beforeend', `<clipPath id="${clipId}"><rect x="${-hw}" y="${-hh}" width="${W + 2 * hw}" height="${H + 2 * hh}"></rect></clipPath>`);
     const coast = document.createElementNS(NS, 'path');
     coast.setAttribute('d', inBox.map((r) => r.map(([x, y], i) => `${i ? 'L' : 'M'}${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join('') + 'Z').join(''));
     coast.setAttribute('class', 'coast');
@@ -258,7 +261,28 @@ export function initTrendMap(host: HTMLElement, onCellPick: (lat: number, lon: n
     centre.setAttribute('class', 'tm-centre');
     centre.setAttribute('transform', `translate(${X(query.lon)},${Y(query.lat)})`);
     centre.innerHTML = '<circle r="7"></circle>';
+    const ct = document.createElementNS(NS, 'text');
+    const right = X(query.lon) < W - 160;
+    ct.setAttribute('x', right ? '11' : '-11');
+    ct.setAttribute('y', '-9');
+    ct.setAttribute('text-anchor', right ? 'start' : 'end');
+    ct.textContent = query.name ? query.name.split(',')[0] : placeText(query);
+    centre.appendChild(ct);
     svg.appendChild(centre);
+    // latitude / longitude ticks on the edges
+    const span = box.lonMax - box.lonMin;
+    const step = span > 6 ? 2 : 1;
+    const ticks = document.createElementNS(NS, 'g');
+    ticks.setAttribute('class', 'tm-ticks');
+    const fmtLat = (v: number) => `${Math.abs(v)}°${v > 0 ? 'N' : v < 0 ? 'S' : ''}`;
+    const fmtLon = (v: number) => `${Math.abs(v)}°${v > 0 ? 'E' : v < 0 ? 'W' : ''}`;
+    let tk = '';
+    for (let v = Math.ceil(box.latMin / step) * step; v <= box.latMax; v += step)
+      tk += `<line x1="${-hw - 5}" x2="${-hw}" y1="${Y(v)}" y2="${Y(v)}"></line><text x="${-hw - 8}" y="${Y(v) + 4}" text-anchor="end">${fmtLat(v)}</text>`;
+    for (let v = Math.ceil(box.lonMin / step) * step; v <= box.lonMax; v += step)
+      tk += `<line x1="${X(v)}" x2="${X(v)}" y1="${H + hh}" y2="${H + hh + 5}"></line><text x="${X(v)}" y="${H + hh + 19}" text-anchor="middle">${fmtLon(v)}</text>`;
+    ticks.innerHTML = tk;
+    svg.appendChild(ticks);
     const cellAt = (ev: PointerEvent | MouseEvent) => {
       const t = ev.target as SVGElement;
       return t.classList.contains('cell') ? cells[Number(t.dataset.i)] : null;

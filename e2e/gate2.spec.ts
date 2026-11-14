@@ -5,6 +5,8 @@ import { expect, test } from '@playwright/test';
 // Force the bundled snapshots: NASA POWER is "down" for these tests.
 const offline = async (page: import('@playwright/test').Page) =>
   page.route('https://power.larc.nasa.gov/**', (r) => r.fulfill({ status: 503, body: 'down' }));
+// element screenshots scroll the page; a sticky header would be stitched into the middle of them
+const unstick = (page: import('@playwright/test').Page) => page.addStyleTag({ content: 'header.site{position:static!important}' });
 
 test('guided case 1 plays step by step from the snapshot when the API is down', async ({ page }, info) => {
   await offline(page);
@@ -58,6 +60,7 @@ test('compare: polar opposites from snapshots', async ({ page }, info) => {
   await expect(page.locator('#cmp-sentence')).toContainText('Opposite trends', { timeout: 20_000 });
   await expect(page.locator('#dock-text')).toContainText('opposite significant trends');
   await page.locator('#dock-close').click();
+  await unstick(page);
   await page.locator('#compare').screenshot({ path: `docs/screens/gate2-${info.project.name}-compare.png` });
 });
 
@@ -72,6 +75,7 @@ test('trend map: Chile box from snapshot has opposite significant cells', async 
   await expect(page.locator('.tm-svg .cell')).toHaveCount(357);
   await expect(page.locator('#tm-summary')).toContainText('Opposite significant trends');
   await page.locator('#dock-close').click();
+  await unstick(page);
   await page.locator('#trendmap').screenshot({ path: `docs/screens/gate2-${info.project.name}-trendmap.png` });
 });
 

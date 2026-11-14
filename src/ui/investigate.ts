@@ -277,7 +277,7 @@ export function initInvestigate(host: HTMLElement): InvestigateApi {
     <section class="stats" aria-labelledby="st-h" id="stats">
       <h3 id="st-h">The statistics behind the verdict</h3>
       <p>Tests run on ${testOn}, ${start} to ${end}. Rates are per decade, in ${escapeHtml(v.units)}.</p>
-      <div class="table-wrap"><table class="stat-table">
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Statistics table (scrolls sideways on small screens)"><table class="stat-table">
         <thead><tr><th scope="col">Method</th><th scope="col">Rate per decade</th><th scope="col">95% interval</th><th scope="col">p-value</th></tr></thead>
         <tbody>
           <tr><th scope="row">Least-squares line, plain t-test (df = ${o.n - 2})</th><td>${fmtNum(o.slope * 10, dp, true)}</td><td>${fmtNum(o.ciLow * 10, dp, true)} to ${fmtNum(o.ciHigh * 10, dp, true)}</td><td>${fmtP(o.p)}</td></tr>

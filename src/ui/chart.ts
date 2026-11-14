@@ -216,6 +216,7 @@ export function renderChart(host: HTMLElement, spec: ChartSpec): void {
   det.className = 'table-alt';
   det.innerHTML = `<summary>Show the data as a table</summary>`;
   const tbl = document.createElement('table');
+  tbl.tabIndex = 0;
   const head = `<tr><th scope="col">Time</th>${spec.series.map((s) => `<th scope="col">${escapeHtml(s.name)}</th>`).join('')}</tr>`;
   const times = [...new Set(spec.series.flatMap((s) => s.t))].sort((a, b) => a - b);
   const rows = times

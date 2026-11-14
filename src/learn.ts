@@ -16,7 +16,7 @@ export function learnHtml(): string {
     </article>
     <article>
       <h3>p-value</h3>
-      <p>Imagine there were <em>no</em> real trend, only random ups and downs. The <strong>p-value</strong> is the chance of still seeing a slope at least as steep as ours. A small p (below 0.05, that is 5%) means chance is an unlikely explanation. We then call the trend <strong>statistically significant</strong>. It does not tell you <em>why</em> it changes, and a large p does not prove that nothing changes.</p>
+      <p>Imagine there were <em>no</em> real trend, only random ups and downs. The <strong>p-value</strong> is the chance of still seeing a slope at least as steep as ours. A small p (below 0.05, that is 5%) means chance is an unlikely explanation. We then call the trend <strong>statistically significant</strong>. It does not tell you <em>why</em> it changes, and a large p does not show that nothing changes.</p>
     </article>
     <article>
       <h3>95% confidence interval</h3>

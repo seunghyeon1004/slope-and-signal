@@ -33,6 +33,8 @@ interface Step {
   /** CSS selector to bring into view */
   focus?: string;
   say: (ctx: Ctx) => string;
+  /** literature source shown under the text */
+  source?: string;
 }
 
 export interface Case {
@@ -135,7 +137,8 @@ export const CASES: Case[] = [
       },
       {
         say: () =>
-          'Detective note: the Southern Ocean around Antarctica is known for slower warming and, in the Ross Sea, more winter sea ice until the mid-2010s, linked to winds and ocean mixing. This is a reanalysis over sea ice, so check it against other data before drawing conclusions. Try the trend map on the Ross Sea next.',
+          'Detective note: satellites show that Antarctic sea ice slowly grew from the late 1970s until 2014 and then shrank fast, unlike the Arctic. The Ross Sea value here is a reanalysis over sea ice, so check it against other data before drawing conclusions. Try the trend map on the Ross Sea next.',
+        source: 'Parkinson, C. L. (2019), PNAS 116(29), 14414-14423, doi:10.1073/pnas.1906556116',
       },
     ],
   },
@@ -200,7 +203,7 @@ export const CASES: Case[] = [
           const yn = c.report.yearsNeeded;
           const lv = c.report.ols.pAdj < 0.05 && c.report.mk.pCorr < 0.05;
           if (lv) return `With the newest data this trend now passes both tests (${fmtP(c.report.ols.pAdj)}, ${fmtP(c.report.mk.pCorr)}).`;
-          return `Not statistically significant: adjusted t-test ${fmtP(c.report.ols.pAdj)}, Mann-Kendall (Hamed-Rao) ${fmtP(c.report.mk.pCorr)}. ${yn ? `If the slope and the year-to-year noise stayed the same, about ${yn} more years of data would make it significant.` : ''} "Not significant" does not mean "no change": it means "not proven yet".`;
+          return `Not statistically significant: adjusted t-test ${fmtP(c.report.ols.pAdj)}, Mann-Kendall (Hamed-Rao) ${fmtP(c.report.mk.pCorr)}. ${yn ? `If the slope and the year-to-year noise stayed the same, about ${yn} more years of data would make it significant.` : ''} "Not significant" does not mean "no change": it means "the data cannot tell yet".`;
         },
       },
     ],
@@ -240,8 +243,9 @@ export const CASES: Case[] = [
         focus: '#verdict',
         say: (ctx) => {
           const c = need(ctx.c);
-          return `Zooming in on the point near Santiago: ${r(c.report.ols.slope * 10, 3)} mm/day per decade, that is about ${fmtNum(Math.abs(c.report.ols.slope * 10 * 365), 0)} mm ${c.report.ols.slope < 0 ? 'less' : 'more'} rain per year every decade (adjusted t-test ${fmtP(c.report.ols.pAdj)}, Mann-Kendall ${fmtP(c.report.mk.pCorr)}). Chile has had a long drought since about 2010, often called the "megadrought".`;
+          return `Zooming in on the point near Santiago: ${r(c.report.ols.slope * 10, 3)} mm/day per decade, that is about ${fmtNum(Math.abs(c.report.ols.slope * 10 * 365), 0)} mm ${c.report.ols.slope < 0 ? 'less' : 'more'} rain per year every decade (adjusted t-test ${fmtP(c.report.ols.pAdj)}, Mann-Kendall ${fmtP(c.report.mk.pCorr)}). Central Chile has had a long drought since 2010, called the "megadrought".`;
         },
+        source: 'Garreaud, R. D. et al. (2017), Hydrol. Earth Syst. Sci. 21, 6307-6327, doi:10.5194/hess-21-6307-2017; Garreaud, R. D. et al. (2020), Int. J. Climatol. 40(1), 421-439, doi:10.1002/joc.6219',
       },
     ],
   },
@@ -262,9 +266,10 @@ export function initCases(host: HTMLElement, apps: Apps): { start(id: string): v
   dock.setAttribute('aria-label', 'Guided case');
   dock.innerHTML = `
     <div class="dock-in">
-      <div class="dock-head"><strong id="dock-title"></strong><span id="dock-count" class="small"></span><button type="button" class="link" id="dock-close" aria-label="Close guided case">Close</button></div>
+      <div class="dock-head"><strong id="dock-title"></strong><span id="dock-count" class="small"></span><button type="button" class="link" id="dock-min" aria-expanded="true" aria-controls="dock-text">Minimise</button><button type="button" class="link" id="dock-close" aria-label="Close guided case">Close</button></div>
       <div class="dock-bar"><span id="dock-prog"></span></div>
       <p id="dock-text" aria-live="polite"></p>
+      <p id="dock-src" class="dock-src" hidden></p>
       <div class="dock-ctl">
         <button type="button" class="btn" id="dock-prev">Back</button>
         <button type="button" class="btn primary" id="dock-play">Pause</button>
@@ -320,6 +325,9 @@ export function initCases(host: HTMLElement, apps: Apps): { start(id: string): v
       }
       if (step.focus) spotlight(document.querySelector(step.focus));
       $('dock-text').textContent = step.say(ctx);
+      const src = $('dock-src');
+      src.hidden = !step.source;
+      src.textContent = step.source ? `Source: ${step.source}` : '';
     } catch (e) {
       $('dock-text').textContent = `${(e as Error).message} Tick "Use the saved copy of the data" above and try again.`;
       playing = false;
@@ -352,6 +360,11 @@ export function initCases(host: HTMLElement, apps: Apps): { start(id: string): v
     playing = true;
     if (idx === cur.steps.length - 1) void go(0);
     else void go(idx + 1);
+  });
+  $('dock-min').addEventListener('click', () => {
+    const min = dock.classList.toggle('min');
+    $('dock-min').textContent = min ? 'Show text' : 'Minimise';
+    $('dock-min').setAttribute('aria-expanded', String(!min));
   });
   $('dock-close').addEventListener('click', () => {
     playing = false;
