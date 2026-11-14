@@ -45,6 +45,7 @@ test('keyboard: start a case, pause, step, minimise and close without a mouse', 
   await page.locator('#dock-min').focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('#dock-text')).toBeHidden();
+  await page.screenshot({ path: `docs/screens/final-${test.info().project.name}-dock-minimised.png` });
   await page.keyboard.press('Enter');
   await expect(page.locator('#dock-text')).toBeVisible();
   await page.keyboard.press('Escape');

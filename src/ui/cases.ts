@@ -102,7 +102,7 @@ export const CASES: Case[] = [
         focus: '#verdict',
         say: (ctx) => {
           const c = need(ctx.c);
-          return `Verdict: a statistically significant warming trend (adjusted t-test ${fmtP(c.report.ols.pAdj)}, Mann-Kendall with Hamed-Rao correction ${fmtP(c.report.mk.pCorr)}). Over ${c.start} to ${c.end} that adds up to about ${r(c.report.ols.slope * (c.end - c.start + 1 - 1), 1)} °C. The test says it is unlikely to be chance; it does not say why.`;
+          return `Verdict: a statistically significant warming trend (adjusted t-test ${fmtP(c.report.ols.pAdj)}, Mann-Kendall with Hamed-Rao correction ${fmtP(c.report.mk.pCorr)}). Over ${c.start} to ${c.end} that adds up to about ${r(c.report.ols.slope * (c.end - c.start), 2)} °C. The test says it is unlikely to be chance; it does not say why.`;
         },
       },
     ],
