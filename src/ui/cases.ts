@@ -240,7 +240,7 @@ export const CASES: Case[] = [
         focus: '#verdict',
         say: (ctx) => {
           const c = need(ctx.c);
-          return `Zooming in on the point near Santiago: ${r(c.report.ols.slope * 10, 3)} mm/day per decade, that is about ${r(c.report.ols.slope * 10 * 365, 0)} mm less rain per year every decade (adjusted t-test ${fmtP(c.report.ols.pAdj)}, Mann-Kendall ${fmtP(c.report.mk.pCorr)}). Chile has had a long drought since about 2010, often called the "megadrought".`;
+          return `Zooming in on the point near Santiago: ${r(c.report.ols.slope * 10, 3)} mm/day per decade, that is about ${fmtNum(Math.abs(c.report.ols.slope * 10 * 365), 0)} mm ${c.report.ols.slope < 0 ? 'less' : 'more'} rain per year every decade (adjusted t-test ${fmtP(c.report.ols.pAdj)}, Mann-Kendall ${fmtP(c.report.mk.pCorr)}). Chile has had a long drought since about 2010, often called the "megadrought".`;
         },
       },
     ],
