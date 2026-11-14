@@ -1,0 +1,11 @@
+// Slope and Signal - smoke test of the deployed site with LIVE NASA POWER data. Written with Claude (Anthropic).
+// Run: DEPLOYED=1 npx playwright test e2e/deployed.spec.ts
+import { expect, test } from '@playwright/test';
+test.skip(!process.env.DEPLOYED, 'set DEPLOYED=1');
+test('deployed site, live NASA POWER, Seoul air temperature', async ({ page }, info) => {
+  await page.goto('https://seunghyeon1004.github.io/slope-and-signal/#v=T2M&lat=37.57&lon=126.98&s=1981&e=2025&p=year&name=Seoul%2C+South+Korea');
+  await expect(page.locator('.verdict')).toBeVisible({ timeout: 60_000 });
+  await expect(page.locator('#status')).toContainText('Fetched live from NASA POWER');
+  await expect(page.locator('#ai-note')).toContainText('Claude (Anthropic)');
+  await page.screenshot({ path: `docs/screens/gate1-deployed-${info.project.name}.png`, fullPage: false });
+});
