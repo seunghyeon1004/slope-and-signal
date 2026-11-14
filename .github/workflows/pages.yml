@@ -1,4 +1,9 @@
 # Slope and Signal - build, test and deploy to GitHub Pages. Written with Claude (Anthropic).
+#
+# Push events can arrive several minutes late. A late run for an older commit
+# must never overwrite a newer deployment, so every run first checks that its
+# commit is still the head of main and skips the deploy otherwise. The deployed
+# commit is published at /slope-and-signal/version.txt.
 name: Deploy to GitHub Pages
 on:
   push:
@@ -14,20 +19,35 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      fresh: ${{ steps.fresh.outputs.fresh }}
     steps:
+      - id: fresh
+        name: Is this commit still the head of main?
+        run: |
+          head=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}" refs/heads/main | cut -f1)
+          echo "head of main: $head, this run: $GITHUB_SHA"
+          if [ "$head" = "$GITHUB_SHA" ]; then echo "fresh=true" >> "$GITHUB_OUTPUT"; else echo "fresh=false" >> "$GITHUB_OUTPUT"; echo "::notice::Stale run, deploy skipped"; fi
       - uses: actions/checkout@v4
+        if: steps.fresh.outputs.fresh == 'true'
       - uses: actions/setup-node@v4
+        if: steps.fresh.outputs.fresh == 'true'
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npx vitest run
-      - run: npm run build
+      - if: steps.fresh.outputs.fresh == 'true'
+        run: npm ci
+      - if: steps.fresh.outputs.fresh == 'true'
+        run: npx vitest run
+      - if: steps.fresh.outputs.fresh == 'true'
+        run: npm run build && echo "$GITHUB_SHA" > dist/version.txt
       - uses: actions/upload-pages-artifact@v3
+        if: steps.fresh.outputs.fresh == 'true'
         with:
           path: dist
   deploy:
     needs: build
+    if: needs.build.outputs.fresh == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

@@ -32,7 +32,7 @@ Slope and Signal answers the four questions of the challenge for any place on Ea
 
 1. **Ask three questions.**
    - *What:* 18 NASA POWER variables in five groups (temperature, water, snow and ice, air and sky, sunlight), each with a one-sentence definition for a high-school student, its units, its source and its first year.
-   - *Where:* click or tap a world map (keyboard works too), type coordinates, or pick one of 19 preset places by type: desert, desert city, rain forest, tidal estuary, big city, polar, mountains, dry grassland, Mediterranean climate, ocean, drying lake. When you pick a type of place, the app suggests three variables worth investigating there and says why. The suggestions come from fixed rules written by the team, not from a model.
+   - *Where:* click or tap a world map (keyboard works too), type coordinates, or pick one of 19 preset places by type: desert, desert city, rain forest, tidal estuary, big city, polar, mountains, dry grassland, Mediterranean climate, ocean, drying lake. When you pick a type of place, the app suggests three variables worth investigating there and says why. The suggestions come from fixed rules in the code (no model runs in the app).
    - *When:* any range of years since 1981 (2001 for sunshine and cloud, see below), and the whole year, a season or a single month.
 2. **See the data.** Three charts: anomalies with the seasonal cycle removed (each month minus its own long-term average), one value per year, and the raw monthly values. Every chart has hover values, keyboard navigation, a one-sentence summary and a data table.
 3. **Get a verdict in plain English.** For example: "Seoul: a significant warming trend in air temperature, +0.359 °C per decade (95% CI +0.250 to +0.468), adjusted t-test p < 0.0001, Mann-Kendall with Hamed-Rao correction p < 0.0001." The word "significant" never appears without the test and its p-value. When a trend is not significant, the app says so and estimates how many more years of data at the same slope and noise would make it significant, because "sometimes all a trend needs is a longer period".
@@ -53,17 +53,17 @@ Slope and Signal answers the four questions of the challenge for any place on Ea
   - The regional endpoint fetches the grid for the trend map.
   - Responses are cached in memory and in the browser; identical requests are shared.
   - Clear messages appear if the API fails, and the guided cases fall back to saved copies of the identical requests.
-- **Statistics, written by us in TypeScript:**
+- **Statistics: the project's own TypeScript code (written with Claude), not a statistics library:**
   - Least-squares slope, standard error, t-test and 95% interval.
   - Lag-1 autocorrelation of the residuals and the effective sample size n(1 − r)/(1 + r) (Santer et al. 2000) for an adjusted t-test.
-  - Mann-Kendall test with tie correction, and the Hamed and Rao (1998) correction using 3 lags. Our rule is that the correction may only make the test more cautious, never less.
+  - Mann-Kendall test with tie correction, and the Hamed and Rao (1998) correction using 3 lags. The app's rule is that the correction may only make the test more cautious, never less.
   - Theil-Sen slope with the Sen (1968) interval.
   - Student-t and normal distributions computed with incomplete beta and gamma functions.
 - **Validation:**
   - 50 unit tests compare every statistic with scipy and pymannkendall reference values (generator script and fixtures are in the repository) to about 1e-9.
   - Property tests check invariances: adding a constant changes no slope; scaling scales slopes and keeps p-values; reversing time flips every sign.
   - 40 browser test runs (20 tests, each on desktop and phone, with Playwright) cover every feature, including live NASA POWER runs.
-  - While testing we found that the Mann-Kendall S changed with floating-point noise: equal anomalies differed by 1e-15, so different software counted different ties. We now round derived values to 6 decimals, and a test checks that the S in the app matches Python's S exactly.
+  - Testing showed that the Mann-Kendall S changed with floating-point noise: equal anomalies differed by 1e-15, so different software counted different ties. The app now rounds derived values to 6 decimals, and a test checks that the S in the app matches Python's S exactly.
 - **Honest caveats** appear next to every verdict:
   - MERRA-2 is a reanalysis, so a trend can partly reflect changes in the observing system.
   - "Significant" does not say why something changes.
@@ -87,14 +87,14 @@ Slope and Signal answers the four questions of the challenge for any place on Ea
 - **Watchable cases:** the guided cases narrate real numbers computed live.
 - **Opposite trends:** they become visible twice, side by side and inside one map.
 
-### Factors the team considered
+### Factors considered
 - Validity first: tested statistics, autocorrelation corrections, conservative wording, data caveats, no invented numbers.
 - Politeness to the free API: one request per place, caching and saved copies for demos.
 - Audience: definitions for a high-school student, help for each region type, and accessibility.
 - Scope: linear trends, as the challenge suggests; non-linear methods are left for the future.
 
 ### Tools and languages
-- **Languages and frameworks:** TypeScript, HTML and CSS, Vite (build), no front-end framework and no chart library. Charts and maps are hand-written SVG.
+- **Languages and frameworks:** TypeScript, HTML and CSS, Vite (build), no front-end framework and no chart library. Charts and maps are drawn as SVG by the project's own code (no chart or map library).
 - **Testing:** Vitest and fast-check (unit and property tests), Playwright with headless Chromium and axe-core (browser and accessibility tests).
 - **Reference values:** Python 3.11 with scipy, numpy and pymannkendall.
 - **Hosting:** GitHub Actions and GitHub Pages.
@@ -116,11 +116,14 @@ We used Claude (Anthropic), a large language model, as a coding and writing assi
 - **Data exploration:** Claude ran exploratory analyses of NASA POWER data to help choose the guided cases.
 - **Documents:** Claude drafted the deck and this text.
 
-The team chose the challenge and the overall concept, reviewed the results and made the decisions. The statistics were checked against independent reference software (scipy, pymannkendall); a review by team member Kim Mi Yeon (mathematics background) is pending.
+The team selected this challenge on the assistant's recommendation and approved the design. The feature set follows the objectives listed in the challenge statement; Claude proposed how to implement them and wrote the code and text. The team directed the work, checked results and made the decisions.
 
-The app itself contains no AI. Every number it shows comes from NASA data and our tested statistics code. The disclosure appears in the README ("Use of AI"), in the app footer, in a `generator` meta tag, and in a header comment in every source file. No AI-generated images, audio or video are used; all pictures are real screenshots of the app.
+TEAM IDEA INPUT: pending
 
-(Note for the lead: please confirm that "the team chose the challenge and the overall concept" matches how the idea came about, because the rules say AI should not be used to come up with the idea.)
+The statistics were checked against independent reference software (scipy, pymannkendall); a review by team member Kim Mi Yeon (mathematics background) is pending.
+
+The app itself contains no AI. Every number it shows comes from NASA data and the project's tested statistics code. The disclosure appears in the README ("Use of AI"), in the app footer, in a `generator` meta tag, and in a header comment in every source file. No AI-generated images, audio or video are used; all pictures are real screenshots of the app.
+
 
 ## NASA Data
 (link text + URL pairs)
@@ -149,7 +152,7 @@ Literature (background facts in the guided cases)
 - Garreaud, R. D., Boisier, J. P., Rondanelli, R., Montecinos, A. et al. (2020), The Central Chile Mega Drought (2010-2018): A climate dynamics perspective, Int. J. Climatol. 40(1), 421-439: https://doi.org/10.1002/joc.6219
 - Parkinson, C. L. (2019), A 40-y record reveals gradual Antarctic sea ice increases followed by decreases at rates far exceeding the rates seen in the Arctic, PNAS 116(29), 14414-14423: https://doi.org/10.1073/pnas.1906556116
 
-Challenge resources we read
+Challenge resources consulted
 - Statistical test methods to detect trends in time series data: https://medium.com/@snp.kriss/statistical-test-methods-to-detect-trends-in-time-series-data-b361a0ec530b
 - A Comprehensive Guide to Statistical Significance: https://www.statsig.com/perspectives/a-comprehensive-guide-to-statistical-significance
 
@@ -172,4 +175,4 @@ Hosting and AI
 - GitHub Pages and GitHub Actions: https://pages.github.com/
 - Claude (Anthropic), AI assistant used for code and text: https://www.anthropic.com/claude
 
-Not used: KNMI Climate Explorer. We did not run a cross-check with it, so it is not listed as a source.
+Not used: KNMI Climate Explorer. No cross-check with it was run, so it is not listed as a source.

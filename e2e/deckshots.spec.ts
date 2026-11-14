@@ -23,12 +23,9 @@ test('deck screenshots', async ({ page }) => {
   await page.click('#dock-next');
   await page.click('#dock-next');
   await expect(page.locator('#dock-text')).toContainText('Not statistically significant', { timeout: 60_000 });
-  await page.setViewportSize({ width: 960, height: 760 });
-  await page.locator('#is-sig').scrollIntoViewIfNeeded();
-  await page.evaluate(() => window.scrollBy(0, -40));
-  await page.waitForTimeout(800);
-  await page.screenshot({ path: `${D}/case-notyet.png` });
-  await page.setViewportSize({ width: 1400, height: 900 });
+  await page.locator('#verdict').screenshot({ path: `${D}/alps-verdict.png` });
+  await page.locator('#ch-year').screenshot({ path: `${D}/alps-year.png` });
+  await page.locator('.dock-in').screenshot({ path: `${D}/dock.png` });
   await page.click('#dock-close');
   await page.click('button[data-case="poles"]');
   await page.click('#dock-play');

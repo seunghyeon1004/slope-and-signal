@@ -34,7 +34,8 @@
   .flow { display: flex; align-items: center; gap: 10px; margin: 8px 0 14px; font-size: 16px; }
   .flow div { background: #fff; border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; padding: 8px 12px; }
   .flow i { color: #898781; font-style: normal; }
-  .crop { max-height: 100%; overflow: hidden; flex: 0 1 auto !important; }
+  .crop { flex: 0 0 auto !important; display: flex; justify-content: center; }
+  .crop img { width: auto; max-width: 100%; max-height: var(--mh, 470px); }
   a { color: #1c5cab; }
 </style>
 </head>
@@ -67,11 +68,11 @@
   <p class="sub">Earth science data rise and fall all the time. Students need to pick a variable, see past the seasons and decide whether a slope is a trend. That usually takes several tools and a statistics package.</p>
   <div class="row">
     <div class="col">
-      <div class="shot crop"><img src="img/raw.png" alt="Raw monthly temperature dominated by the seasonal cycle"></div>
+      <div class="shot crop" style="--mh: 300px;"><img src="img/raw.png" alt="Raw monthly temperature dominated by the seasonal cycle"></div>
       <p class="cap">Raw monthly air temperature at Seoul: the summer-winter swing hides everything else.</p>
     </div>
     <div class="col">
-      <div class="shot crop"><img src="img/anomalies.png" alt="Monthly anomalies with a rising trend line"></div>
+      <div class="shot crop" style="--mh: 300px;"><img src="img/anomalies.png" alt="Monthly anomalies with a rising trend line"></div>
       <p class="cap">Same data with the seasonal cycle removed: a slow upward trend appears.</p>
     </div>
   </div>
@@ -90,7 +91,7 @@
   <div class="flow"><div><b>1 What</b> 18 variables with plain definitions</div><i>&rarr;</i><div><b>2 Where</b> map, coordinates or 19 preset places</div><i>&rarr;</i><div><b>3 When</b> years, season or month</div><i>&rarr;</i><div><b>NASA POWER API</b> fetched in the browser</div><i>&rarr;</i><div><b>Verdict</b> in plain English</div></div>
   <div class="row">
     <div class="col" style="flex: 1.2;">
-      <div class="shot crop"><img src="img/ask.png" alt="The three questions form with a world map"></div>
+      <div class="shot crop" style="--mh: 455px;"><img src="img/ask.png" alt="The three questions form with a world map"></div>
     </div>
     <div class="col" style="flex: 0.8;">
       <ul>
@@ -112,7 +113,7 @@
     <div class="col" style="flex: 1.05;">
       <div class="shot"><img src="img/stats.png" alt="Table of statistics behind the verdict"></div>
       <p class="cap">Every number behind the verdict, with the two tests the verdict uses highlighted.</p>
-      <div class="shot crop" style="margin-top: 10px; flex: 1;"><img src="img/yearly.png" alt="Yearly mean air temperature at Seoul with trend line"></div>
+      <div class="shot crop" style="margin-top: 10px; --mh: 270px;"><img src="img/yearly.png" alt="Yearly mean air temperature at Seoul with trend line"></div>
     </div>
     <div class="col" style="flex: 0.95;">
       <ul>
@@ -135,11 +136,11 @@
   <h2>One variable, opposite trends in different places</h2>
   <div class="row">
     <div class="col" style="flex: 1.15;">
-      <div class="shot crop"><img src="img/compare.png" alt="Svalbard warming and Ross Sea cooling compared"></div>
+      <div class="shot crop" style="--mh: 470px;"><img src="img/compare.png" alt="Svalbard warming and Ross Sea cooling compared"></div>
       <p class="cap">Compare two places: Svalbard (Arctic) warming, Ross Sea (off Antarctica) cooling, both significant on both tests.</p>
     </div>
     <div class="col" style="flex: 0.85;">
-      <div class="shot crop"><img src="img/trendmap-plot.png" alt="Trend map of rain around central Chile"></div>
+      <div class="shot crop" style="--mh: 470px;"><img src="img/trendmap-plot.png" alt="Trend map of rain around central Chile"></div>
       <p class="cap">Trend map of rain for a 10 by 10 degree box around central Chile: 163 of 357 cells drying (red), 28 wetting (blue); dots mark p &lt; 0.05.</p>
     </div>
   </div>
@@ -152,8 +153,9 @@
   <h2>Guided cases and an honest tool</h2>
   <div class="row">
     <div class="col" style="flex: 1.1;">
-      <div class="shot crop"><img src="img/case-notyet.png" alt="Guided case player explaining a trend that is not significant yet"></div>
-      <p class="cap">Case "Not significant yet": Alps spring snow is falling, but the data cannot tell yet; the tool estimates how many more years are needed.</p>
+      <div class="shot crop" style="--mh: 290px;"><img src="img/alps-verdict.png" alt="Verdict for Alps spring snow depth: not significant yet"></div>
+      <div class="shot crop" style="--mh: 150px; margin-top: 8px;"><img src="img/dock.png" alt="Guided case player explaining the result step by step"></div>
+      <p class="cap">Case "Not significant yet": Alps spring snow is falling, but the data cannot tell yet; the tool estimates how many more years are needed. Below: the case player.</p>
     </div>
     <div class="col" style="flex: 0.9;">
       <ul>
@@ -173,7 +175,7 @@
   <h2>From one tool to a classroom of data detectives</h2>
   <div class="grid3">
     <div class="card"><b>More NASA data</b><span>Add satellite products such as GPM rain, MODIS vegetation and OMI ozone through NASA services like Giovanni and AppEEARS.</span></div>
-    <div class="card"><b>Classroom missions</b><span>Teacher-made cases as shareable links: every investigation already has its own URL and CSV export.</span></div>
+    <div class="card"><b>Classroom missions</b><span>Cases built by teachers, shared as links: every investigation already has its own URL and CSV export.</span></div>
     <div class="card"><b>Beyond straight lines</b><span>Seasonal Mann-Kendall, change points and trend differences between two places, explained as plainly as today's tests.</span></div>
   </div>
   <div class="row">
@@ -181,10 +183,10 @@
       <p class="big" style="margin: 6px 0 10px; font-size: 22px;">Try it: <a href="https://seunghyeon1004.github.io/slope-and-signal/">seunghyeon1004.github.io/slope-and-signal</a></p>
       <p style="margin: 0 0 6px;">Code (MIT): <a href="https://github.com/seunghyeon1004/slope-and-signal">github.com/seunghyeon1004/slope-and-signal</a></p>
       <p style="margin: 0 0 6px;"><b>Team Slope and Signal:</b> Seunghyeon Baek, Kim Mi Yeon</p>
-      <p style="margin: 0; font-size: 16px; color: #52514e;"><b>Use of AI:</b> code and text written with Claude (Anthropic) under the team's direction; all numbers come from NASA data and our own tested statistics code; no AI-generated images. Data: NASA POWER (NASA LaRC), MERRA-2 (NASA GMAO), CERES SYN1deg and GEWEX SRB; land outlines: Natural Earth (public domain). Not an official NASA product.</p>
+      <p style="margin: 0; font-size: 16px; color: #52514e;"><b>Use of AI:</b> code and text written with Claude (Anthropic) under the team's direction; all numbers come from NASA data and the project's own tested statistics code; no AI-generated images. Data: NASA POWER (NASA LaRC), MERRA-2 (NASA GMAO), CERES SYN1deg and GEWEX SRB; land outlines: Natural Earth (public domain). Not an official NASA product.</p>
     </div>
     <div class="col" style="flex: 0.95;">
-      <div class="shot crop"><img src="img/cases.png" alt="The five guided cases"></div>
+      <div class="shot crop" style="--mh: 330px;"><img src="img/cases.png" alt="The five guided cases"></div>
       <p class="cap">The five guided cases, ready for a classroom.</p>
     </div>
   </div>
