@@ -1,0 +1,23 @@
+{
+  "name": "slope-and-signal",
+  "version": "1.0.0",
+  "description": "Be an Earth system trend detective: NASA POWER trends with tested statistics",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview --port 4173",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "fixtures": ".venv/bin/python tools/make_fixtures.py"
+  },
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "fast-check": "^4.10.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  },
+  "private": true
+}
