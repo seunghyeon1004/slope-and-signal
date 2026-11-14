@@ -79,6 +79,9 @@ describe('POWER parsing and deseasonalising', () => {
     expect(a.y.length).toBe(c.y.length);
     a.y.forEach((v, i) => close(v, c.y[i], 1e-9, 1e-12));
     a.t.forEach((v, i) => close(v, c.t[i]));
+    // ties must be identical to Python's: same Mann-Kendall S from our own anomalies
+    expect(mannKendall(a.y).s).toBe(c.mk.s);
+    a.y.forEach((v, i) => expect(v).toBe(c.y[i]));
   });
 });
 

@@ -59,9 +59,19 @@ export function decimalTime(year: number, month: number): number {
   return year + (month - 0.5) / 12;
 }
 
-/** Monthly anomalies: value minus the mean of its calendar month. */
+/**
+ * Round derived values to 6 decimals. POWER values have at most 2 decimals, so
+ * two anomalies that are mathematically equal must count as a tie in the
+ * Mann-Kendall test; without rounding, floating-point noise (about 1e-15)
+ * decides whether they tie, and different software would get different S.
+ */
+export function r6(x: number): number {
+  return Math.round(x * 1e6) / 1e6;
+}
+
+/** Monthly anomalies: value minus the mean of its calendar month (rounded to 6 decimals). */
 export function anomalies(s: MonthValue[], clim = climatology(s)): { t: number[]; y: number[] } {
-  return { t: s.map((m) => decimalTime(m.year, m.month)), y: s.map((m) => m.value - clim[m.month - 1]) };
+  return { t: s.map((m) => decimalTime(m.year, m.month)), y: s.map((m) => r6(m.value - clim[m.month - 1])) };
 }
 
 function aggregate(vals: { value: number; days: number }[], agg: Agg): number {
@@ -105,7 +115,7 @@ export function yearlySeries(s: MonthValue[], months: number[], agg: Agg): { t: 
     }
     if (ok) {
       t.push(yr);
-      y.push(aggregate(vals, agg));
+      y.push(r6(aggregate(vals, agg)));
     }
   }
   return { t, y };

@@ -42,5 +42,13 @@ export function learnHtml(): string {
       <h3>Where do the numbers come from?</h3>
       <p>NASA's <strong>POWER</strong> service gives monthly values for any point on Earth since 1981. Most variables come from <strong>MERRA-2</strong>, a NASA model that combines satellite and ground observations into a consistent global picture (a "reanalysis"). Sunlight and cloud come from satellite products (GEWEX SRB, then CERES). Values describe a grid box tens of kilometres wide (about 50 x 60 km for MERRA-2, about 100 km for sunlight and cloud), not a single weather station.</p>
     </article>
+    <article>
+      <h3>What a trend does not tell you</h3>
+      <p>A <strong>significant trend</strong> means the change is unlikely to be chance. It does not say <em>why</em> it happens: that needs other clues. MERRA-2 is a <strong>reanalysis</strong> (a weather model fed with observations), so a trend can partly come from changes in which satellites and stations were available over the years. And one value describes a grid box tens of kilometres wide, not a weather station in a town. Compare with other data before drawing big conclusions.</p>
+    </article>
+    <article>
+      <h3>Trend maps and many tests</h3>
+      <p>The trend map runs one test per grid cell, often hundreds. At the 5% level, about 1 cell in 20 can look significant by pure chance, and neighbouring cells share the same weather. So trust large, coherent patches more than single dots. Each cell uses one value per year, the Mann-Kendall test with the Hamed-Rao correction and the Theil-Sen slope.</p>
+    </article>
   </div>`;
 }

@@ -35,8 +35,12 @@ npm test           # vitest: statistics vs scipy / pymannkendall fixtures + prop
 npm run e2e        # Playwright (bundled headless Chromium), includes one LIVE NASA POWER test
 ```
 
-Reference fixtures: `tools/make_fixtures.py` (Python 3.11, scipy, numpy, pymannkendall) writes
+Reference fixtures (Python venv, one time: `/opt/homebrew/bin/python3.11 -m venv .venv && .venv/bin/pip install -r tools/requirements.txt`,
+then `npm run fixtures`, which runs `.venv/bin/python tools/make_fixtures.py`): `tools/make_fixtures.py` (Python 3.11, scipy, numpy, pymannkendall) writes
 `tests/fixtures/stats_reference.json`, which the TypeScript statistics must match.
+
+Guided-case snapshots: `.venv/bin/python tools/make_snapshots.py` saves the exact NASA POWER requests the cases use
+into `public/data/snap/`, so the cases also work when the API is unreachable.
 
 ## Use of AI
 

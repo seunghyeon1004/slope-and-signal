@@ -163,7 +163,8 @@ def main():
     clim = {m: np.mean([v for (yy, mm), v in vals.items() if mm == m]) for m in range(1, 13)}
     keys = sorted(vals)
     tr = [yy + (mm - 0.5) / 12 for yy, mm in keys]
-    an = [vals[k] - clim[k[1]] for k in keys]
+    # rounded to 6 decimals exactly like the app (src/data/series.ts r6) so ties are well defined
+    an = [round(vals[k] - clim[k[1]], 6) for k in keys]
     c6 = case("power_seoul_t2m_anomaly", tr, an)
     c6["clim"] = [clim[m] for m in range(1, 13)]
     cases.append(c6)

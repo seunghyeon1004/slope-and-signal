@@ -24,6 +24,8 @@ export interface Variable {
   official: string;
   source: string;
   firstYear: number;
+  /** suggested first year (radiation: 2001, the start of CERES, to avoid the SRB/CERES splice) */
+  defaultStart?: number;
   /** how 12 months combine into a season/year value */
   agg: Agg;
   /** label for the yearly value */
@@ -130,7 +132,7 @@ export const CATALOGUE: Variable[] = [
     id: 'CLOUD_AMT', name: 'Cloud cover', group: 'Air and sky', units: '%', agg: 'mean', yearlyLabel: 'average', upIsWarm: false, dp: 1,
     plain: 'The share of the sky covered by cloud, in percent.',
     official: 'The average percent of cloud amount during the temporal period.',
-    source: RAD, firstYear: 1984,
+    source: RAD, firstYear: 1984, defaultStart: 2001,
     clue: 'Clouds shade the ground by day and keep it warm at night.',
   },
   {
@@ -151,14 +153,14 @@ export const CATALOGUE: Variable[] = [
     id: 'ALLSKY_SFC_SW_DWN', name: 'Sunshine reaching the ground', group: 'Sunlight', units: 'MJ/m²/day', agg: 'mean', yearlyLabel: 'average', upIsWarm: true, dp: 2,
     plain: 'Solar energy arriving on flat ground per day, after clouds and haze have taken their share.',
     official: 'The total solar irradiance incident (direct plus diffuse) on a horizontal plane at the surface of the earth under all sky conditions.',
-    source: RAD, firstYear: 1984,
+    source: RAD, firstYear: 1984, defaultStart: 2001,
     clue: 'Rises when skies clear (less cloud or cleaner air: "brightening"), falls with more cloud or smog ("dimming").',
   },
   {
     id: 'ALLSKY_SFC_LW_DWN', name: 'Heat radiation from the sky', group: 'Sunlight', units: 'MJ/m²/day', agg: 'mean', yearlyLabel: 'average', upIsWarm: true, dp: 2,
     plain: 'Invisible infrared (heat) energy sent down to the ground by the air, water vapour and clouds above.',
     official: 'The downward thermal infrared irradiance under all sky conditions reaching a horizontal plane at the surface of the earth.',
-    source: RAD, firstYear: 1984,
+    source: RAD, firstYear: 1984, defaultStart: 2001,
     clue: 'This is the greenhouse effect you can measure: more vapour and greenhouse gas, more heat from the sky.',
   },
   {
